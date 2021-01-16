@@ -47,12 +47,15 @@ public class PlayerController : PhysicalMovingObject, InputsObserver, CollisionO
     {
         this.inputs = inputs;
 
-        if(inputs[1] && _face != Face.Right){
+        if (inputs[1] && _face != Face.Right)
+        {
             isLeft = false;
             isRight = true;
             _face = Face.Right;
             transform.localScale = new Vector2(-transform.localScale.x, transform.localScale.y);
-        }else if(inputs[0]  && _face != Face.Left){
+        }
+        else if (inputs[0] && _face != Face.Left)
+        {
             isRight = false;
             isLeft = true;
             _face = Face.Left;
@@ -65,140 +68,179 @@ public class PlayerController : PhysicalMovingObject, InputsObserver, CollisionO
         groundCollisions = gCollisions;
         wallCollisions = wCollisions;
 
-        if(groundCollisions[2] && (inputs[0] == inputs[1])){
+        if (groundCollisions[2] && (inputs[0] == inputs[1]))
+        {
 
             _rb.bodyType = RigidbodyType2D.Dynamic;
             _state = State.Stand;
         }
-        if(groundCollisions[2] && (inputs[0] != inputs[1])){
+        if (groundCollisions[2] && (inputs[0] != inputs[1]))
+        {
             _rb.bodyType = RigidbodyType2D.Dynamic;
             _state = State.Walk;
         }
 
-        if(!groundCollisions[2] && !wallCollisions[0] && !wallCollisions[1] && jumpPointer == 0){
+        if (!groundCollisions[2] && !wallCollisions[0] && !wallCollisions[1] && jumpPointer == 0)
+        {
             _rb.bodyType = RigidbodyType2D.Dynamic;
-            if(_rb.gravityScale != 1)
+            if (_rb.gravityScale != 1)
                 _rb.gravityScale = 1;
             _state = State.Jump;
         }
 
-        if(!groundCollisions[2] && !wallCollisions[0] && !wallCollisions[1] && jumpPointer == 1){
+        if (!groundCollisions[2] && !wallCollisions[0] && !wallCollisions[1] && jumpPointer == 1)
+        {
             _rb.bodyType = RigidbodyType2D.Dynamic;
-            if(_rb.gravityScale != 1)
+            if (_rb.gravityScale != 1)
                 _rb.gravityScale = 1;
             _state = State.Rebound;
         }
 
-        if(!groundCollisions[2] && (wallCollisions[0] || wallCollisions[1]) && curPos.x == prePos.x){
+        if (!groundCollisions[2] && (wallCollisions[0] || wallCollisions[1]) && curPos.x == prePos.x)
+        {
+
             _state = State.Glide;
         }
     }
 
+    void EnablePhysics()
+    {
+        _rb.bodyType = RigidbodyType2D.Dynamic;
+    }
+
     void Update()
     {
-        if(alive){
+        if (alive)
+        {
             UpdateCurInputs();
             curPos = _rb.position;
-            switch(_state)
+            switch (_state)
             {
                 case State.Stand:
-                    if(jumpPointer != 0)
+                    if (jumpPointer != 0)
                         jumpPointer = 0;
-                    if(!glide)
+                    if (!glide)
                         glide = true;
                     _anim.Play("Stand");
-                    if(groundCollisions[2] && (curInputs[2] && !preInputs[2]))
-                        Jump(jumpForce);
-                break;
+                    if (groundCollisions[2] && (curInputs[2] && !preInputs[2]))
+                        Jump(jumpForce, curInputs[0], curInputs[1]);
+                    break;
                 case State.Walk:
-                    if(jumpPointer != 0)
+                    if (jumpPointer != 0)
                         jumpPointer = 0;
-                    if(!glide)
+                    if (!glide)
                         glide = true;
-                    if(_rb.gravityScale != 1)
+                    if (_rb.gravityScale != 1)
                         _rb.gravityScale = 1;
                     _anim.Play("Walk");
 
-                    if(inputs[0] && !inputs[1] && !groundCollisions[0]){
-                        if(inputs[0]  && _face != Face.Left &&  _state != State.Glide){
+                    if (inputs[0] && !inputs[1] && !groundCollisions[0])
+                    {
+                        if (inputs[0] && _face != Face.Left && _state != State.Glide)
+                        {
                             _face = Face.Left;
                             transform.localScale = new Vector2(-transform.localScale.x, transform.localScale.y);
                         }
                         Move(-moveSpeed);
-                    }else if(!inputs[0] && inputs[1] && !groundCollisions[1]){
-                        if(inputs[1] && _face != Face.Right){
+                    }
+                    else if (!inputs[0] && inputs[1] && !groundCollisions[1])
+                    {
+                        if (inputs[1] && _face != Face.Right)
+                        {
                             _face = Face.Right;
                             transform.localScale = new Vector2(-transform.localScale.x, transform.localScale.y);
                         }
                         Move(moveSpeed);
                     }
 
-                    if(groundCollisions[2] && (curInputs[2] && !preInputs[2]))
-                        Jump(jumpForce);
-                break;
+                    if (groundCollisions[2] && (curInputs[2] && !preInputs[2]))
+                        Jump(jumpForce, curInputs[0], curInputs[1]);
+                    break;
                 case State.Jump:
-                    if(!glide)
+                    if (!glide)
                         glide = true;
                     _anim.Play("Jump");
-                    if(_rb.gravityScale != 1)
+                    if (_rb.gravityScale != 1)
                         _rb.gravityScale = 1;
-                    if(inputs[0] && !inputs[1])
+                    if (inputs[0] && !inputs[1])
                         Move(-moveSpeed + (-0.5f));
-                    else if(!inputs[0] && inputs[1])
+                    else if (!inputs[0] && inputs[1])
                         Move(moveSpeed + 0.5f);
-                break;
+                    break;
                 case State.Rebound:
-                    if(!glide)
+                    if (!glide)
                         glide = true;
-                    _anim.Play("Jump");
-                    if(_rb.gravityScale != 1)
+                    _anim.Play("Jump2");
+                    if (_rb.gravityScale != 1)
                         _rb.gravityScale = 1;
 
-                        if(inputs[0] && !inputs[1])
-                            Move(-0.5f);
-                        else if(!inputs[0] && inputs[1])
-                            Move(0.5f);
-                break;
+                    if (inputs[0] && !inputs[1])
+                        Move(-0.5f);
+                    else if (!inputs[0] && inputs[1])
+                        Move(0.5f);
+                    break;
                 case State.Glide:
-                    if(!isLeft && wallCollisions[1])
+                    if (!isLeft && wallCollisions[1])
                         _anim.Play("Glide");
-                    else if(isLeft && wallCollisions[1])
+                    else if (isLeft && wallCollisions[1])
                         _anim.Play("Glide2");
 
-                    if(!isRight && wallCollisions[0])
+                    if (!isRight && wallCollisions[0])
                         _anim.Play("Glide");
-                    else if(isRight && wallCollisions[0])
+                    else if (isRight && wallCollisions[0])
                         _anim.Play("Glide2");
 
-                    if(jumpPointer != 1)
+                    if (jumpPointer != 1)
                         jumpPointer = 1;
-                    if(glide){
+                    if (glide)
+                    {
                         _rb.bodyType = RigidbodyType2D.Static;
-                        _rb.bodyType = RigidbodyType2D.Dynamic;
+                        Invoke("EnablePhysics", 0.3f);
+                        //_rb.bodyType = RigidbodyType2D.Dynamic;
                         glide = false;
                     }
-                    if(_rb.gravityScale != 0.1f)
+                    if (_rb.gravityScale != 0.1f)
                         _rb.gravityScale = 0.1f;
 
-                    if(wallCollisions[1] && isLeft && (curInputs[2] && !preInputs[2])){
-                        _rb.AddForce((new Vector2(0, 1.15f) + new Vector2(-0.25f, 0)) * jumpForce, ForceMode2D.Impulse);
-                        _anim.Play("Jump");
-                    } else if(wallCollisions[0] && isRight && (curInputs[2] && !preInputs[2])) {
-                        _rb.AddForce((new Vector2(0, 1.15f) + new Vector2(0.25f, 0)) * jumpForce, ForceMode2D.Impulse);
+                    if (wallCollisions[1] && isLeft && (curInputs[2] && !preInputs[2]))
+                    {
+                        EnablePhysics();
+                        _rb.AddForce((new Vector2(0, 0.9f) + new Vector2(-0.25f, 0)) * jumpForce, ForceMode2D.Impulse);
+                        _anim.Play("Jump2");
+                    }
+                    else if (wallCollisions[0] && isRight && (curInputs[2] && !preInputs[2]))
+                    {
+                        EnablePhysics();
+                        _rb.AddForce((new Vector2(0, 0.9f) + new Vector2(0.25f, 0)) * jumpForce, ForceMode2D.Impulse);
                         _anim.Play("Jump");
                     }
 
-                    if(wallCollisions[0] && !isRight && (curInputs[2] && !preInputs[2]))
+                    if (wallCollisions[0] && !isRight && (curInputs[2] && !preInputs[2]))
+                    {
+                        EnablePhysics();
                         _rb.AddForce((new Vector2(0, 0.25f) + new Vector2(0.08f, 0)) * jumpForce, ForceMode2D.Impulse);
-                    else if(wallCollisions[1] && !isLeft && (curInputs[2] && !preInputs[2]))
+
+                        //_anim.Play("Jump2");
+                        //_state = State.Rebound;
+                    }
+                    else if (wallCollisions[1] && !isLeft && (curInputs[2] && !preInputs[2]))
+                    {
+                        EnablePhysics();
                         _rb.AddForce((new Vector2(0, 0.25f) + new Vector2(-0.08f, 0)) * jumpForce, ForceMode2D.Impulse);
-                break;
+
+                        // _anim.Play("Jump");
+                        //_state = State.Rebound;
+                    }
+                    break;
             }
 
             UpdatePreInputs();
             prePos = curPos;
-        }else{
-            if(!deathplayed){
+        }
+        else
+        {
+            if (!deathplayed)
+            {
                 deathcounter.count.countDeath += 1;
                 deathcounter.UpdateUI();
                 uiAnimator.Play("ExitGameplayLevel");
@@ -206,7 +248,7 @@ public class PlayerController : PhysicalMovingObject, InputsObserver, CollisionO
                 GetComponent<CapsuleCollider2D>().enabled = false;
                 _rb.bodyType = RigidbodyType2D.Static;
                 _rb.bodyType = RigidbodyType2D.Dynamic;
-                Jump(jumpForce);
+                Jump(jumpForce, curInputs[0], curInputs[1]);
             }
             _state = State.Death;
             _anim.Play("Death");
@@ -228,13 +270,13 @@ public class PlayerController : PhysicalMovingObject, InputsObserver, CollisionO
 
     private void UpdateCurInputs()
     {
-        for(int i = 0; i < 3; i++)
+        for (int i = 0; i < 3; i++)
             curInputs[i] = inputs[i];
     }
 
     private void UpdatePreInputs()
     {
-        for(int i = 0; i < 3; i++)
+        for (int i = 0; i < 3; i++)
             preInputs[i] = curInputs[i];
     }
 

@@ -30,11 +30,17 @@ public class PhysicalMovingObject : MonoBehaviour
 
     }
 
-    public virtual void Jump(float jump)
+    public virtual void Jump(float jump, bool leftInput, bool rightInput)
     {
 
-        //_rb.velocity = new Vector2(0f, jump);
-        _rb.AddForce(Vector2.up * jump, ForceMode2D.Impulse);
+        if (leftInput && !rightInput)
+            _rb.AddForce((Vector2.up + Vector2.left / 15) * jump, ForceMode2D.Impulse);
+
+        if (rightInput && !leftInput)
+            _rb.AddForce((Vector2.up + Vector2.right / 15) * jump, ForceMode2D.Impulse);
+
+        if (!rightInput && !leftInput)
+            _rb.AddForce(Vector2.up * jump, ForceMode2D.Impulse);
     }
 
 }
