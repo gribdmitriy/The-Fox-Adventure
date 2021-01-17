@@ -34,10 +34,10 @@ public class PhysicalMovingObject : MonoBehaviour
     {
 
         if (leftInput && !rightInput)
-            _rb.AddForce((Vector2.up + Vector2.left / 15) * jump, ForceMode2D.Impulse);
+            _rb.AddForce((Vector2.up ) * jump, ForceMode2D.Impulse);
 
         if (rightInput && !leftInput)
-            _rb.AddForce((Vector2.up + Vector2.right / 15) * jump, ForceMode2D.Impulse);
+            _rb.AddForce((Vector2.up ) * jump, ForceMode2D.Impulse);
 
         if (!rightInput && !leftInput)
             _rb.AddForce(Vector2.up * jump, ForceMode2D.Impulse);

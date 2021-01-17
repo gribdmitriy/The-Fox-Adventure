@@ -17,7 +17,7 @@ public class CollisionDetector : MonoBehaviour, CollisionObservable
         AddObserver(gameObject.transform.parent.GetComponent<PlayerController>());
     }
 
-    void FixedUpdate()
+    void Update()
     {
         if(Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y - 0.4f), Vector2.left, 0.18f, 1 << LayerMask.NameToLayer("Ground")) ||
         Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y - 0.2f), Vector2.left, 0.18f, 1 << LayerMask.NameToLayer("Ground")) ||
@@ -42,9 +42,9 @@ public class CollisionDetector : MonoBehaviour, CollisionObservable
             groundCollisions[1] = false;
             NotifyObservers();
         }
-        if(Physics2D.Raycast(transform.position, Vector2.down, 0.55f, 1 << LayerMask.NameToLayer("Ground")) ||
-        Physics2D.Raycast(new Vector2(transform.position.x - 0.089f, transform.position.y), Vector2.down, 0.55f, 1 << LayerMask.NameToLayer("Ground")) ||
-        Physics2D.Raycast(new Vector2(transform.position.x + 0.089f, transform.position.y), Vector2.down, 0.55f, 1 << LayerMask.NameToLayer("Ground")))
+        if(Physics2D.Raycast(transform.position - new Vector3(0, 0.5f, 0), Vector2.down, 0.05f, 1 << LayerMask.NameToLayer("Ground")) ||
+        Physics2D.Raycast(new Vector2(transform.position.x - 0.089f, transform.position.y - 0.5f), Vector2.down, 0.05f, 1 << LayerMask.NameToLayer("Ground")) ||
+        Physics2D.Raycast(new Vector2(transform.position.x + 0.089f, transform.position.y - 0.5f), Vector2.down, 0.05f, 1 << LayerMask.NameToLayer("Ground")))
         {
             groundCollisions[2] = true;
             NotifyObservers();

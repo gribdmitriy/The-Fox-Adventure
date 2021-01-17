@@ -33,7 +33,7 @@ public class DialogScene : MonoBehaviour
 
     void Start()
     {
-        //PlayerPrefs.DeleteKey("Progress");
+        PlayerPrefs.DeleteKey("Progress");
         scenefinished = false;
         dialogfinished = false;
         player = GameObject.Find("Player").GetComponent<PlayerController>();

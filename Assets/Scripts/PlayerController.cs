@@ -163,9 +163,25 @@ public class PlayerController : PhysicalMovingObject, InputsObserver, CollisionO
                     if (_rb.gravityScale != 1)
                         _rb.gravityScale = 1;
                     if (inputs[0] && !inputs[1])
-                        Move(-moveSpeed + (-0.5f));
+                        Move(-3f);
                     else if (!inputs[0] && inputs[1])
-                        Move(moveSpeed + 0.5f);
+                        Move(3f);
+
+                    if (curInputs[2] && !preInputs[2] && curInputs[0])
+                    {
+                        _rb.bodyType = RigidbodyType2D.Static;
+                        EnablePhysics();
+                        _rb.AddForce((new Vector2(0, 1f) + new Vector2(-0.8f, 0)) * jumpForce, ForceMode2D.Impulse);
+                        _anim.Play("Jump2");
+                    }
+
+                    if (curInputs[2] && !preInputs[2] && curInputs[1])
+                    {
+                        _rb.bodyType = RigidbodyType2D.Static;
+                        EnablePhysics();
+                        _rb.AddForce((new Vector2(0, 1f) + new Vector2(0.8f, 0)) * jumpForce, ForceMode2D.Impulse);
+                        _anim.Play("Jump");
+                    }
                     break;
                 case State.Rebound:
                     if (!glide)
@@ -174,10 +190,26 @@ public class PlayerController : PhysicalMovingObject, InputsObserver, CollisionO
                     if (_rb.gravityScale != 1)
                         _rb.gravityScale = 1;
 
+                    if (curInputs[2] && !preInputs[2] && curInputs[0])
+                    {
+                        _rb.bodyType = RigidbodyType2D.Static;
+                        EnablePhysics();
+                        _rb.AddForce((new Vector2(0, 1f) + new Vector2(-0.8f, 0)) * jumpForce, ForceMode2D.Impulse);
+                        _anim.Play("Jump2");
+                    }
+                    
+                    if (curInputs[2] && !preInputs[2] && curInputs[1])
+                    {
+                        _rb.bodyType = RigidbodyType2D.Static;
+                        EnablePhysics();
+                        _rb.AddForce((new Vector2(0, 1f) + new Vector2(0.8f, 0)) * jumpForce, ForceMode2D.Impulse);
+                        _anim.Play("Jump");
+                    }
+
                     if (inputs[0] && !inputs[1])
-                        Move(-0.5f);
+                        Move(-0.1f);
                     else if (!inputs[0] && inputs[1])
-                        Move(0.5f);
+                        Move(0.1f);
                     break;
                 case State.Glide:
                     if (!isLeft && wallCollisions[1])
@@ -205,13 +237,13 @@ public class PlayerController : PhysicalMovingObject, InputsObserver, CollisionO
                     if (wallCollisions[1] && isLeft && (curInputs[2] && !preInputs[2]))
                     {
                         EnablePhysics();
-                        _rb.AddForce((new Vector2(0, 0.9f) + new Vector2(-0.25f, 0)) * jumpForce, ForceMode2D.Impulse);
+                        _rb.AddForce((new Vector2(0, 1f) + new Vector2(-0.4f, 0)) * jumpForce, ForceMode2D.Impulse);
                         _anim.Play("Jump2");
                     }
                     else if (wallCollisions[0] && isRight && (curInputs[2] && !preInputs[2]))
                     {
                         EnablePhysics();
-                        _rb.AddForce((new Vector2(0, 0.9f) + new Vector2(0.25f, 0)) * jumpForce, ForceMode2D.Impulse);
+                        _rb.AddForce((new Vector2(0, 1f) + new Vector2(0.4f, 0)) * jumpForce, ForceMode2D.Impulse);
                         _anim.Play("Jump");
                     }
 
